@@ -32,11 +32,14 @@ import {
   ReactNode,
 } from 'react';
 import { Route } from 'react-router-dom';
+import { pathToRegexp } from 'path-to-regexp';
 
 /**
  * @class RCRoute
  */
-export class RCRoute<T = any> implements Omit<RCRouteImpl, 'path' | 'id'> {
+export class RCRoute<T = any>
+  implements Omit<RCRouteImpl, 'path' | 'id' | 'children'>
+{
   /**
    * constructor
    * @param id 路由的ID 用于和数据库中的ID匹配
@@ -44,7 +47,7 @@ export class RCRoute<T = any> implements Omit<RCRouteImpl, 'path' | 'id'> {
    * @param title 路由的标题
    * @param element 路由的元素
    * @param showMenu 是否显示在菜单中/如果用来遍历菜单可以使用此参数
-   * @param children 路由的子元素
+   * @param routes
    * @param root 根路由
    * @param parent 父级
    * @param icon 路由作为菜单时的图标
@@ -59,7 +62,7 @@ export class RCRoute<T = any> implements Omit<RCRouteImpl, 'path' | 'id'> {
       | ComponentClass<any>
       | LazyExoticComponent<any>,
     public readonly showMenu?: boolean,
-    public readonly children?: RCRouteImpl[],
+    routes?: RCRouteImpl[],
     public readonly root?: RCRoute,
     public readonly parent?: RCRoute,
     public readonly icon?: any,
@@ -68,7 +71,12 @@ export class RCRoute<T = any> implements Omit<RCRouteImpl, 'path' | 'id'> {
     if (!root) {
       this.root = this;
     }
+    if (routes) {
+      this.routes = this.childrenNodes(routes);
+    }
   }
+
+  public routes?: RCRoute[];
 
   /**
    * 获取路径
@@ -88,15 +96,44 @@ export class RCRoute<T = any> implements Omit<RCRouteImpl, 'path' | 'id'> {
     return createElement(Route, {
       path: this.path,
       element: this.createNode(),
-      children: this.childrenNodes().map((o) => o.toElement()),
+      children: (this.routes || []).map((o) => o.toElement()),
       ...props,
     });
   }
 
   /**
-   * 将element创建为React元素
+   * 向下查找 找到为止
    */
-  public createNode(): ReactNode | undefined {
+  public children(): RCRoute[] {
+    if (Array.isArray(this.routes)) {
+      const list: RCRoute[] = [];
+      this.routes.find((o) => {
+        list.push(...o.children());
+        return pathToRegexp(o.path).test(this.path);
+      });
+      return list;
+    }
+    return [];
+  }
+
+  /**
+   * 向上查找 找到为止
+   */
+  public parents(path?: string): RCRoute[] {
+    if (this.parent) {
+      if (path && pathToRegexp(this.parent.getPath()).test(path)) {
+        return [this.parent];
+      }
+      return [this.parent].concat(this.parent.parents());
+    }
+    return [];
+  }
+
+  /**
+   * 将element创建为React元素
+   * @private
+   */
+  private createNode(): ReactNode | undefined {
     if (this.element) {
       return createElement(RCRoute.Context.Provider, {
         value: this,
@@ -107,10 +144,11 @@ export class RCRoute<T = any> implements Omit<RCRouteImpl, 'path' | 'id'> {
 
   /**
    * 遍历子元素
+   * @private
    */
-  public childrenNodes(): RCRoute[] {
-    if (this.children) {
-      return this.children.map((o) =>
+  private childrenNodes(routes: RCRouteImpl[]): RCRoute[] {
+    if (Array.isArray(routes)) {
+      return routes.map((o) =>
         RCRoute.create({
           ...o,
           root: this.root,
