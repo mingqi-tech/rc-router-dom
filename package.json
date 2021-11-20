@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mingqi/rc-router-dom.git"
+    "url": "git+https://github.com/mingqi-tech/rc-router-dom.git"
   },
   "keywords": [
     "rc-router-dom",
@@ -21,9 +21,9 @@
     "react-router-dom"
   ],
   "bugs": {
-    "url": "https://github.com/mingqi/rc-router-dom/issues"
+    "url": "https://github.com/mingqi-tech/rc-router-dom/issues"
   },
-  "homepage": "https://github.com/mingqi/rc-router-dom#readme",
+  "homepage": "https://github.com/mingqi-tech/rc-router-dom#readme",
   "author": "YunlongRan<549510622@qq.com>",
   "license": "MIT",
   "devDependencies": {
