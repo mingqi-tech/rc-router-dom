@@ -83,7 +83,10 @@ export class RCRoute<T = any>
    */
   public getPath(): string {
     if (this.parent) {
-      return [this.parent.getPath(), this.path].join('/').replace(/\/{2}/, '/');
+      return [this.parent.getPath(), this.path]
+        .join('/')
+        .replace(/\/{2}/, '/')
+        .replace(/\*/g, '');
     }
     return this.path;
   }
