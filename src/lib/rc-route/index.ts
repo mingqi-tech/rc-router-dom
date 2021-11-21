@@ -88,7 +88,7 @@ export class RCRoute<T = any>
         .replace(/\/{2}/, '/')
         .replace(/\*/g, '');
     }
-    return this.path;
+    return this.path.replace(/\/{2}/, '/').replace(/\*/g, '');
   }
 
   /**
