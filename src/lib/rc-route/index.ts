@@ -127,7 +127,7 @@ export class RCRoute<T = any>
       if (path && pathToRegexp(this.parent.getPath()).test(path)) {
         return [this.parent];
       }
-      return [this.parent].concat(this.parent.parents());
+      return [this.parent].concat(this.parent.parents(path));
     }
     return [];
   }
