@@ -10,8 +10,8 @@ yarn add react-router-dom @mingqi/rc-router-dom
 ```
 
 ## Documentation
-- [ApiDocs](https://mingqi.github.io/rc-router-dom/)
-- [Samples](https://github.com/mingqi/rc-router-dom/tree/master/sample)
+- [ApiDocs](https://mingqi-tech.github.io/rc-router-dom/)
+- [Samples](https://github.com/mingqi-tech/rc-router-dom/tree/master/sample)
 - [GitRepository](https://github.com/mingqi-tech/rc-router-dom)
 
 
