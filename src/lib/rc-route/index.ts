@@ -34,6 +34,10 @@ import {
 import { Route } from 'react-router-dom';
 import { pathToRegexp, compile, Key, PathFunction } from 'path-to-regexp';
 
+const nameCollection: Map<string, RCRoute> = new Map();
+
+const routeCollection: Set<RCRoute> = new Set();
+
 /**
  * @class RCRoute
  */
@@ -88,7 +92,7 @@ export class RCRoute<T = any>
     }
 
     if (name) {
-      const route = RCRoute.nameCollection.get(name);
+      const route = nameCollection.get(name);
       if (route) {
         console.warn(
           ` This route name: ${name} has been registered. Please do not register again. If it is repeated, the route will be overwritten, so that the associated lookup cannot be performed
@@ -99,9 +103,9 @@ export class RCRoute<T = any>
           }  fullPath: ${this.getPath()}`
         );
       }
-      RCRoute.nameCollection.set(name, this);
+      nameCollection.set(name, this);
     }
-    RCRoute.routeCollection.add(this);
+    routeCollection.add(this);
   }
 
   /**
@@ -200,7 +204,7 @@ export class RCRoute<T = any>
    * 获取所有路由
    */
   public getAllRoutes(): RCRoute[] {
-    return Array.from(RCRoute.routeCollection);
+    return Array.from(routeCollection);
   }
 
   /**
@@ -208,7 +212,7 @@ export class RCRoute<T = any>
    * @param name
    */
   public getRouteByName<T = any>(name: string): RCRoute<T> | undefined {
-    return RCRoute.nameCollection.get(name);
+    return nameCollection.get(name);
   }
 
   /**
@@ -266,10 +270,6 @@ export class RCRoute<T = any>
       path: '/*',
     })
   );
-
-  private static nameCollection: Map<string, RCRoute> = new Map();
-
-  private static routeCollection: Set<RCRoute> = new Set();
 }
 
 export interface RCRouteImpl<T = any> {
