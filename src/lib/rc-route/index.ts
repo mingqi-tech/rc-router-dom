@@ -32,17 +32,25 @@ import {
   ReactNode,
 } from 'react';
 import { Route } from 'react-router-dom';
-import { pathToRegexp } from 'path-to-regexp';
+import { pathToRegexp, compile, Key, PathFunction } from 'path-to-regexp';
 
 /**
  * @class RCRoute
  */
 export class RCRoute<T = any>
-  implements Omit<RCRouteImpl, 'path' | 'id' | 'children'>
+  implements Omit<RCRouteImpl, 'path' | 'children'>
 {
+  private readonly keys: Key[] = [];
+
+  private readonly regexp: RegExp;
+
+  public routes?: RCRoute[];
+
+  private compile: PathFunction<object>;
+
   /**
    * constructor
-   * @param id 路由的ID 用于和数据库中的ID匹配
+   * @param name 路由的名称
    * @param path 路由的路径
    * @param title 路由的标题
    * @param element 路由的元素
@@ -54,7 +62,7 @@ export class RCRoute<T = any>
    * @param extras
    */
   public constructor(
-    private id: string | number,
+    public name: string,
     private readonly path: string,
     public readonly title?: string,
     public readonly element?:
@@ -65,18 +73,44 @@ export class RCRoute<T = any>
     routes?: RCRouteImpl[],
     public readonly root?: RCRoute,
     public readonly parent?: RCRoute,
-    public readonly icon?: any,
+    public readonly icon?: FunctionComponent<any> | ComponentClass<any>,
     public readonly extras?: T
   ) {
+    this.regexp = pathToRegexp(this.getPath(), this.keys);
+    this.compile = compile(this.getPath(), {
+      encode: encodeURIComponent,
+    });
     if (!root) {
       this.root = this;
     }
     if (routes) {
       this.routes = this.childrenNodes(routes);
     }
+
+    if (name) {
+      const route = RCRoute.nameCollection.get(name);
+      if (route) {
+        console.warn(
+          ` This route name: ${name} has been registered. Please do not register again. If it is repeated, the route will be overwritten, so that the associated lookup cannot be performed
+.\nRegistered route details:\n      path: ${
+            route.path
+          }\n  fullPath: ${route.getPath()}\n Current route details:\n      path: ${
+            this.path
+          }  fullPath: ${this.getPath()}`
+        );
+      }
+      RCRoute.nameCollection.set(name, this);
+    }
+    RCRoute.routeCollection.add(this);
   }
 
-  public routes?: RCRoute[];
+  /**
+   * 转换为路径
+   * @param data
+   */
+  public toPath(data: object): string {
+    return this.compile(data);
+  }
 
   /**
    * 获取路径
@@ -163,12 +197,46 @@ export class RCRoute<T = any>
   }
 
   /**
+   * 获取所有路由
+   */
+  public getAllRoutes(): RCRoute[] {
+    return Array.from(RCRoute.routeCollection);
+  }
+
+  /**
+   * 根据路由名称查找路由
+   * @param name
+   */
+  public getRouteByName<T = any>(name: string): RCRoute<T> | undefined {
+    return RCRoute.nameCollection.get(name);
+  }
+
+  /**
+   * 根据path查找路由
+   * 找到第一个匹配的就结束
+   * @param path
+   */
+  public getRouteByPath<T = any>(path: string): RCRoute<T> | null {
+    return this.getAllRoutes().find(
+      (o) => o.path === path
+    ) as RCRoute<T> | null;
+  }
+
+  /**
+   * 获取相同path的路由
+   * @param path
+   */
+  public getRoutesByPath<T = any>(path: string): RCRoute<T>[] {
+    return this.getAllRoutes().filter((o) => o.path === path);
+  }
+
+  /**
    * 创建路由实例
    * @param option
    */
   public static create(option: RCRouteImpl): RCRoute {
     return new RCRoute(
-      option.id,
+      option.name,
       option.path,
       option.title,
       option.element,
@@ -194,14 +262,18 @@ export class RCRoute<T = any>
    */
   public static Context = createContext<RCRoute>(
     RCRoute.create({
-      id: 'root',
+      name: 'root',
       path: '/*',
     })
   );
+
+  private static nameCollection: Map<string, RCRoute> = new Map();
+
+  private static routeCollection: Set<RCRoute> = new Set();
 }
 
 export interface RCRouteImpl<T = any> {
-  readonly id: string;
+  readonly name: string;
   readonly path: string;
   readonly title?: string;
   readonly element?:
