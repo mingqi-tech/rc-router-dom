@@ -44,7 +44,7 @@ const routeCollection: Set<RCRoute> = new Set();
 export class RCRoute<T = any>
   implements Omit<RCRouteImpl, 'path' | 'children'>
 {
-  private readonly keys: Key[] = [];
+  public readonly keys: Key[] = [];
 
   private readonly regexp: RegExp;
 
