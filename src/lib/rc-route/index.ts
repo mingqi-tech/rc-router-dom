@@ -100,7 +100,7 @@ export class RCRoute<T = any>
             route.path
           }\n  fullPath: ${route.getPath()}\n Current route details:\n      path: ${
             this.path
-          }  fullPath: ${this.getPath()}`
+          }\n  fullPath: ${this.getPath()}`
         );
       }
       nameCollection.set(name, this);
