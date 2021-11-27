@@ -5,7 +5,7 @@
     /* Basic Options */
     "incremental": true,
     /* Enable incremental compilation */
-    "target": "es5",
+    "target": "esnext",
     "lib": [
       "dom",
       "dom.iterable",
