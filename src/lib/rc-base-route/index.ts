@@ -287,7 +287,7 @@ export interface RCBaseRouteImpl<
     | FunctionComponent<any>
     | ComponentClass<any>
     | LazyExoticComponent<any>;
-  readonly children?: RCRouteImpl[] | RCBaseRoute[];
+  readonly children?: Array<RCRouteImpl | RCBaseRoute>;
   root?: RCBaseRoute;
   parent?: RCBaseRoute;
   readonly title?: string;

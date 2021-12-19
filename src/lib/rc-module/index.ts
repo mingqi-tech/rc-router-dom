@@ -60,7 +60,21 @@ export class RCModule<
       option.path,
       option.name,
       option.controller,
-      option.children,
+      option.children
+        ? option.children.map((o) => {
+            if (o instanceof RCBaseRoute) {
+              o.root = this.root;
+              o.parent = this as RCBaseRoute;
+              return o;
+            } else {
+              return RCRoute.create({
+                ...o,
+                root: this.root,
+                parent: this as RCBaseRoute,
+              });
+            }
+          })
+        : undefined,
       option.root,
       option.parent,
       option.title,
@@ -73,30 +87,15 @@ export class RCModule<
       option.showMenu,
       option.description
     );
-    if (option.children) {
-      this.children = option.children.map((o) => {
-        if (o instanceof RCBaseRoute) {
-          o.root = this.root;
-          o.parent = this as RCBaseRoute;
-          return o;
-        } else {
-          return RCRoute.create({
-            ...o,
-            root: this.root,
-            parent: this as RCBaseRoute,
-          });
-        }
-      });
-    }
   }
 }
 
 export interface RCModuleImpl<T = any, S = any, A extends Action = AnyAction>
-  extends RCBaseRouteImpl<T, S, A> {
+  extends Omit<RCBaseRouteImpl<T, S, A>, 'children'> {
   /**
    * 子路由
    */
-  readonly children?: RCModule[] | RCRoute[] | RCRouteImpl[];
+  readonly children?: Array<RCModule | RCRoute | RCRouteImpl>;
 
   /**
    * 父模块

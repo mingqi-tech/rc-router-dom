@@ -32,13 +32,13 @@ import { RCBaseRoute } from '../rc-base-route';
 export class RCRouter implements RCRouterImpl {
   /**
    * constructor
-   * @param module 模块
+   * @param route 路由
    * @param basename 多实例项目开发时使用
    * @param mode 路由模式
    * @param window window对象
    */
   public constructor(
-    public readonly module: RCBaseRoute,
+    public readonly route: RCBaseRoute,
     public readonly basename?: string,
     public readonly mode?: 'hash' | 'browser',
     public readonly window?: Window
@@ -48,14 +48,14 @@ export class RCRouter implements RCRouterImpl {
    * 将路由对象转换成 ReactElement
    */
   public toElement(): ReactElement {
-    const { mode, basename, module } = this;
+    const { mode, basename, route } = this;
     return createElement(RCBaseRoute.Context.Provider, {
-      value: module,
+      value: route,
       children: createElement(mode === 'hash' ? HashRouter : BrowserRouter, {
         basename,
         window,
         children: createElement(Routes, {
-          children: module.toElement(),
+          children: route.toElement(),
         }),
       }),
     });
@@ -67,7 +67,7 @@ export class RCRouter implements RCRouterImpl {
    */
   public static create(option: RCRouterImpl): RCRouter {
     return new RCRouter(
-      option.module,
+      option.route,
       option.basename,
       option.mode || 'browser',
       option.window
@@ -76,7 +76,7 @@ export class RCRouter implements RCRouterImpl {
 }
 
 export interface RCRouterImpl {
-  readonly module: RCBaseRoute;
+  readonly route: RCBaseRoute;
   readonly basename?: string;
   readonly mode?: 'hash' | 'browser';
   readonly window?: Window;
