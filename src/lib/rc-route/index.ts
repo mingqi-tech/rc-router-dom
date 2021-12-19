@@ -58,6 +58,7 @@ export class RCRoute<
       option.path,
       option.name,
       option.controller,
+      option.id,
       undefined,
       option.root,
       option.parent,

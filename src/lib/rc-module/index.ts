@@ -58,6 +58,7 @@ export class RCModule<
       option.path,
       option.name,
       option.controller,
+      option.id,
       undefined,
       option.root,
       option.parent,

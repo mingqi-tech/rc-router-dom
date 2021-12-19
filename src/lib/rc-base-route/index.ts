@@ -66,6 +66,7 @@ export abstract class RCBaseRoute<
    * 构造函数
    * @param path 路由路径
    * @param name 路由名称
+   * @param id
    * @param controller 路由控制器
    * @param children 路由子页面
    * @param root 路由的根路由
@@ -87,6 +88,7 @@ export abstract class RCBaseRoute<
       | FunctionComponent<any>
       | ComponentClass<any>
       | LazyExoticComponent<any>,
+    public readonly id?: string | number,
     children?: RCBaseRoute[],
     public root?: RCBaseRoute,
     public parent?: RCBaseRoute,
@@ -234,9 +236,9 @@ export abstract class RCBaseRoute<
     if (this.parent) {
       return [this.parent.getFullPath(), this.getPath()]
         .join('/')
-        .replace(/\/{2}/g, '');
+        .replace(/\/{2}/g, '/');
     }
-    return ['', this.getPath()].join('/').replace(/\/{2}/g, '');
+    return ['', this.getPath()].join('/').replace(/\/{2}/g, '/');
   }
 
   /**
@@ -293,6 +295,7 @@ export interface RCBaseRouteImpl<
     | FunctionComponent<any>
     | ComponentClass<any>
     | LazyExoticComponent<any>;
+  readonly id?: string | number;
   readonly children?: RCBaseRoute[];
   root?: RCBaseRoute;
   parent?: RCBaseRoute;
