@@ -22,7 +22,46 @@
  *  SOFTWARE.
  */
 
-export * from './rc-route';
-export * from './rc-router';
-export * from './hooks';
-export * from './constants';
+import {
+  Dispatch,
+  Reducer,
+  ReducerAction,
+  ReducerState,
+  useContext,
+  useEffect,
+  useReducer,
+} from 'react';
+import { RCBaseRoute } from '../../rc-base-route';
+import { Action, AnyAction } from 'redux';
+
+/**
+ * 默认reducer
+ * @param state
+ */
+const defaultReducer = <S = undefined>(state: S): S => {
+  console.warn('This route context cannot find reducer.');
+  return state;
+};
+
+/**
+ * 使用route reducer
+ */
+export function useRouteReducer<S = any, A extends Action = AnyAction>(): [
+  ReducerState<Reducer<S, A>>,
+  Dispatch<ReducerAction<Reducer<S, A>>>
+] {
+  const context = useContext(RCBaseRoute.Context);
+  const [state, dispatch] = useReducer(
+    context.reducer || defaultReducer,
+    context.initialState
+  );
+
+  // 同步state
+  useEffect(() => {
+    if (context.reducer) {
+      context.initialState = state;
+    }
+  }, [state]);
+
+  return [state, dispatch];
+}

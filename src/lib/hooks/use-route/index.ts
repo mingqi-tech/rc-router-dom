@@ -24,10 +24,11 @@
 
 import { useContext } from 'react';
 import { RCRoute } from '../../rc-route';
+import { RCBaseRoute } from '../../rc-base-route';
 
 /**
  * 获取当前上下文中的Route实例
  */
 export function useRoute(): RCRoute {
-  return useContext(RCRoute.Context);
+  return useContext(RCBaseRoute.Context);
 }

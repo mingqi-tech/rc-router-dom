@@ -22,9 +22,9 @@
  *  SOFTWARE.
  */
 
-import { RCRoute, RCRouteImpl } from '../rc-route';
 import { createElement, ReactElement } from 'react';
 import { BrowserRouter, HashRouter, Routes } from 'react-router-dom';
+import { RCBaseRoute } from '../rc-base-route';
 
 /**
  * @class RCRouter
@@ -32,13 +32,13 @@ import { BrowserRouter, HashRouter, Routes } from 'react-router-dom';
 export class RCRouter implements RCRouterImpl {
   /**
    * constructor
-   * @param route 跟路由
+   * @param module 模块
    * @param basename 多实例项目开发时使用
    * @param mode 路由模式
    * @param window window对象
    */
   public constructor(
-    public readonly route: RCRouteImpl,
+    public readonly module: RCBaseRoute,
     public readonly basename?: string,
     public readonly mode?: 'hash' | 'browser',
     public readonly window?: Window
@@ -48,15 +48,14 @@ export class RCRouter implements RCRouterImpl {
    * 将路由对象转换成 ReactElement
    */
   public toElement(): ReactElement {
-    const { mode, basename, route } = this;
-    const root = RCRoute.create(route);
-    return createElement(RCRoute.Context.Provider, {
-      value: root,
+    const { mode, basename, module } = this;
+    return createElement(RCBaseRoute.Context.Provider, {
+      value: module,
       children: createElement(mode === 'hash' ? HashRouter : BrowserRouter, {
         basename,
         window,
         children: createElement(Routes, {
-          children: root.toElement(),
+          children: module.toElement(),
         }),
       }),
     });
@@ -68,7 +67,7 @@ export class RCRouter implements RCRouterImpl {
    */
   public static create(option: RCRouterImpl): RCRouter {
     return new RCRouter(
-      option.route,
+      option.module,
       option.basename,
       option.mode || 'browser',
       option.window
@@ -77,7 +76,7 @@ export class RCRouter implements RCRouterImpl {
 }
 
 export interface RCRouterImpl {
-  readonly route: RCRouteImpl;
+  readonly module: RCBaseRoute;
   readonly basename?: string;
   readonly mode?: 'hash' | 'browser';
   readonly window?: Window;

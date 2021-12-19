@@ -22,7 +22,25 @@
  *  SOFTWARE.
  */
 
-export * from './rc-route';
-export * from './rc-router';
-export * from './hooks';
-export * from './constants';
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { RCBaseRoute } from '../../rc-base-route';
+
+/**
+ * 获取当前上下文中的Route实例
+ */
+export function useRouteState<S = any>(
+  initialState: S
+): [S, Dispatch<SetStateAction<S>>] {
+  const context = useContext(RCBaseRoute.Context);
+  const [state, dispatch] = useState(context.initialState || initialState);
+  useEffect(() => {
+    context.initialState = state;
+  }, [state]);
+  return [state, dispatch];
+}

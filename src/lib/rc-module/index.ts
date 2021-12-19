@@ -24,11 +24,12 @@
 
 import { RCBaseRoute, RCBaseRouteImpl } from '../rc-base-route';
 import { Action, AnyAction } from 'redux';
+import { RCRoute, RCRouteImpl } from '../rc-route';
 
 /**
- * @class RCRoute
+ * @class RCModule
  */
-export class RCRoute<
+export class RCModule<
   T = any,
   S = any,
   A extends Action = AnyAction
@@ -38,21 +39,23 @@ export class RCRoute<
    * @param option
    */
   public static create<T, S, A extends Action = AnyAction>(
-    option: RCRouteImpl<T, S, A>
+    option: RCModuleImpl<T, S, A>
   ): RCRoute<T, S, A> {
-    return new RCRoute<T, S, A>(option);
+    return new RCModule<T, S, A>(option);
   }
+
+  public parent?: RCModule;
 
   /**
    * 子元素列表
    */
-  public readonly children?: RCBaseRoute[];
+  public readonly children?: RCModule[] | RCRoute[];
 
   /**
    * 构造函数
    * @param option
    */
-  protected constructor(option: RCRouteImpl<T, S, A>) {
+  protected constructor(option: RCModuleImpl<T, S, A>) {
     super(
       option.path,
       option.name,
@@ -72,7 +75,7 @@ export class RCRoute<
     );
     if (option.children) {
       this.children = option.children.map((o) => {
-        if (o instanceof RCRoute) {
+        if (o instanceof RCBaseRoute) {
           o.root = this.root;
           o.parent = this as RCBaseRoute;
           return o;
@@ -86,20 +89,17 @@ export class RCRoute<
       });
     }
   }
-
-  /**
-   * 创建路由实现需要的数据
-   * @param option
-   */
-  public static createImpl<T>(option: RCRouteImpl<T>): RCRouteImpl<T> {
-    return option;
-  }
 }
 
-export interface RCRouteImpl<T = any, S = any, A extends Action = AnyAction>
+export interface RCModuleImpl<T = any, S = any, A extends Action = AnyAction>
   extends RCBaseRouteImpl<T, S, A> {
   /**
    * 子路由
    */
-  readonly children?: RCRouteImpl[] | RCRoute[];
+  readonly children?: RCModule[] | RCRoute[] | RCRouteImpl[];
+
+  /**
+   * 父模块
+   */
+  parent?: RCModule;
 }
