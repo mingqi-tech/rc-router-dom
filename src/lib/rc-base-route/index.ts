@@ -22,7 +22,7 @@
  *  SOFTWARE.
  */
 
-import { compile, pathToRegexp } from 'path-to-regexp';
+import { compile, Key, pathToRegexp } from 'path-to-regexp';
 import React, {
   ComponentClass,
   createContext,
@@ -46,6 +46,10 @@ export abstract class RCBaseRoute<
   S = any,
   A extends Action = AnyAction
 > {
+  public keys: Key[] = [];
+
+  public regexp: RegExp;
+
   /**
    * 路由path 不允许以斜杠开头
    * @abstract
@@ -103,6 +107,7 @@ export abstract class RCBaseRoute<
     if (!this.root) {
       this.root = this as any;
     }
+    this.regexp = pathToRegexp(this.getFullPath(), this.keys);
   }
 
   /**
