@@ -229,13 +229,9 @@ export abstract class RCBaseRoute<
     if (this.parent) {
       return [this.parent.getFullPath(), this.getPath()]
         .join('/')
-        .replace(/\*/g, '')
         .replace(/\/{2}/g, '');
     }
-    return ['', this.getPath()]
-      .join('/')
-      .replace(/\*/g, '')
-      .replace(/\/{2}/g, '');
+    return ['', this.getPath()].join('/').replace(/\/{2}/g, '');
   }
 
   /**
