@@ -44,12 +44,10 @@ export class RCModule<
     return new RCModule<T, S, A>(option);
   }
 
-  public parent?: RCModule;
-
   /**
-   * 子元素列表
+   * 子路由列表
    */
-  public readonly children?: RCModule[] | RCRoute[];
+  public children?: RCBaseRoute[] = undefined;
 
   /**
    * 构造函数
@@ -60,21 +58,7 @@ export class RCModule<
       option.path,
       option.name,
       option.controller,
-      option.children
-        ? option.children.map((o) => {
-            if (o instanceof RCBaseRoute) {
-              o.root = this.root;
-              o.parent = this as RCBaseRoute;
-              return o;
-            } else {
-              return RCRoute.create({
-                ...o,
-                root: this.root,
-                parent: this as RCBaseRoute,
-              });
-            }
-          })
-        : undefined,
+      undefined,
       option.root,
       option.parent,
       option.title,
@@ -87,6 +71,22 @@ export class RCModule<
       option.showMenu,
       option.description
     );
+
+    if (option.children) {
+      this.children = option.children.map((o) => {
+        if (o instanceof RCBaseRoute) {
+          o.root = this.root;
+          o.parent = this as RCBaseRoute;
+          return o;
+        } else {
+          return RCRoute.create({
+            ...o,
+            root: this.root,
+            parent: this as RCBaseRoute,
+          });
+        }
+      });
+    }
   }
 }
 

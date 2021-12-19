@@ -23,3 +23,5 @@
  */
 
 export * from './use-route';
+export * from './use-route-reducer';
+export * from './use-route-state';

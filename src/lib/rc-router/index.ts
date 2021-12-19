@@ -22,7 +22,7 @@
  *  SOFTWARE.
  */
 
-import { createElement, ReactElement } from 'react';
+import { createContext, createElement, ReactElement } from 'react';
 import { BrowserRouter, HashRouter, Routes } from 'react-router-dom';
 import { RCBaseRoute } from '../rc-base-route';
 
@@ -49,6 +49,9 @@ export class RCRouter implements RCRouterImpl {
    */
   public toElement(): ReactElement {
     const { mode, basename, route } = this;
+    if (!RCBaseRoute.Context) {
+      RCBaseRoute.Context = createContext(route);
+    }
     return createElement(RCBaseRoute.Context.Provider, {
       value: route,
       children: createElement(mode === 'hash' ? HashRouter : BrowserRouter, {

@@ -22,8 +22,8 @@
  *  SOFTWARE.
  */
 
-import { pathToRegexp, compile } from 'path-to-regexp';
-import {
+import { compile, pathToRegexp } from 'path-to-regexp';
+import React, {
   ComponentClass,
   createContext,
   createElement,
@@ -34,10 +34,8 @@ import {
   Reducer,
 } from 'react';
 import { LocaleLanguageKey } from '../constants';
-import { RcInitialRoute } from '../rc-initial-route';
 import { Route } from 'react-router-dom';
 import { Action, AnyAction, CombinedState } from 'redux';
-import { RCRouteImpl } from '../rc-route';
 
 /**
  * 抽象基础路由类
@@ -48,13 +46,6 @@ export abstract class RCBaseRoute<
   S = any,
   A extends Action = AnyAction
 > {
-  /**
-   * 路由的Provider提供的上下文
-   */
-  public static Context = createContext<RCBaseRoute<any, any, any>>(
-    new RcInitialRoute()
-  );
-
   /**
    * 路由path 不允许以斜杠开头
    * @abstract
@@ -92,7 +83,7 @@ export abstract class RCBaseRoute<
       | FunctionComponent<any>
       | ComponentClass<any>
       | LazyExoticComponent<any>,
-    children?: RCRouteImpl[] | RCBaseRoute[],
+    children?: RCBaseRoute[],
     public root?: RCBaseRoute,
     public parent?: RCBaseRoute,
     public readonly title?: string,
@@ -117,7 +108,7 @@ export abstract class RCBaseRoute<
   /**
    * 子路由列表
    */
-  public readonly children?: RCBaseRoute[];
+  public children?: RCBaseRoute[];
 
   /**
    * 向上查找父，找到指定name的route为止，如果不指定name则返回所有
@@ -236,9 +227,15 @@ export abstract class RCBaseRoute<
    */
   public getFullPath(): string {
     if (this.parent) {
-      return [this.parent.getFullPath(), this.getPath()].join('/');
+      return [this.parent.getFullPath(), this.getPath()]
+        .join('/')
+        .replace(/\*/g, '')
+        .replace(/\/{2}/g, '');
     }
-    return ['', this.getPath()].join('/');
+    return ['', this.getPath()]
+      .join('/')
+      .replace(/\*/g, '')
+      .replace(/\/{2}/g, '');
   }
 
   /**
@@ -254,6 +251,9 @@ export abstract class RCBaseRoute<
    * @private
    */
   private createNode(): ReactNode | undefined {
+    if (!RCBaseRoute.Context) {
+      RCBaseRoute.Context = createContext(this as any);
+    }
     if (this.controller) {
       return createElement(RCBaseRoute.Context.Provider, {
         value: this,
@@ -274,6 +274,11 @@ export abstract class RCBaseRoute<
       ...props,
     });
   }
+
+  /**
+   * 路由的Provider提供的上下文
+   */
+  public static Context: React.Context<RCBaseRoute<any, any, any>>;
 }
 
 export interface RCBaseRouteImpl<
@@ -287,7 +292,7 @@ export interface RCBaseRouteImpl<
     | FunctionComponent<any>
     | ComponentClass<any>
     | LazyExoticComponent<any>;
-  readonly children?: Array<RCRouteImpl | RCBaseRoute>;
+  readonly children?: RCBaseRoute[];
   root?: RCBaseRoute;
   parent?: RCBaseRoute;
   readonly title?: string;

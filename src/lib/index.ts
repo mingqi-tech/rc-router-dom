@@ -26,3 +26,4 @@ export * from './rc-route';
 export * from './rc-router';
 export * from './hooks';
 export * from './constants';
+export * from './rc-module';

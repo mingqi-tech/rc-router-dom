@@ -24,6 +24,7 @@
 
 import { RCBaseRoute, RCBaseRouteImpl } from '../rc-base-route';
 import { Action, AnyAction } from 'redux';
+import { Omit } from 'react-redux';
 
 /**
  * @class RCRoute
@@ -44,9 +45,9 @@ export class RCRoute<
   }
 
   /**
-   * 子元素列表
+   * 子路由列表
    */
-  public readonly children?: RCBaseRoute[];
+  public children?: RCBaseRoute[] = undefined;
 
   /**
    * 构造函数
@@ -57,21 +58,7 @@ export class RCRoute<
       option.path,
       option.name,
       option.controller,
-      option.children
-        ? option.children.map((o) => {
-            if (o instanceof RCRoute) {
-              o.root = this.root;
-              o.parent = this as RCBaseRoute;
-              return o;
-            } else {
-              return RCRoute.create({
-                ...o,
-                root: this.root,
-                parent: this as RCBaseRoute,
-              });
-            }
-          })
-        : undefined,
+      undefined,
       option.root,
       option.parent,
       option.title,
@@ -84,6 +71,22 @@ export class RCRoute<
       option.showMenu,
       option.description
     );
+
+    if (option.children) {
+      this.children = option.children.map((o) => {
+        if (o instanceof RCRoute) {
+          o.root = this.root;
+          o.parent = this as RCBaseRoute;
+          return o;
+        } else {
+          return RCRoute.create({
+            ...o,
+            root: this.root,
+            parent: this as RCBaseRoute,
+          });
+        }
+      });
+    }
   }
 
   /**
@@ -96,7 +99,7 @@ export class RCRoute<
 }
 
 export interface RCRouteImpl<T = any, S = any, A extends Action = AnyAction>
-  extends RCBaseRouteImpl<T, S, A> {
+  extends Omit<RCBaseRouteImpl<T, S, A>, 'children'> {
   /**
    * 子路由
    */
