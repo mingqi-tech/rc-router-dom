@@ -22,13 +22,7 @@
  *  SOFTWARE.
  */
 
-import {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { RCBaseRoute } from '../../rc-base-route';
 
 /**
@@ -39,8 +33,12 @@ export function useRouteState<S = any>(
 ): [S, Dispatch<SetStateAction<S>>] {
   const context = useContext(RCBaseRoute.Context);
   const [state, dispatch] = useState(context.initialState || initialState);
-  useEffect(() => {
-    context.initialState = state;
-  }, [state]);
-  return [state, dispatch];
+  return [
+    state,
+    (value: SetStateAction<S>): void => {
+      context.initialState = state;
+      dispatch({ ...state });
+      dispatch(value);
+    },
+  ];
 }

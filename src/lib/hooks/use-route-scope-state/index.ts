@@ -46,8 +46,7 @@ export function useRouteScopeState<T extends {}>(
     initialState,
     (value: SetStateAction<T>): void => {
       dispatch({ ...state });
-      context.routeStateMap.set(initialState.constructor, initialState);
-      dispatch(value);
+      context.routeStateMap.set(initialState.constructor, value);
     },
   ];
 }

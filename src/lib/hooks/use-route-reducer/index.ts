@@ -28,7 +28,6 @@ import {
   ReducerAction,
   ReducerState,
   useContext,
-  useEffect,
   useReducer,
 } from 'react';
 import { RCBaseRoute } from '../../rc-base-route';
@@ -51,17 +50,16 @@ export function useRouteReducer<S = any, A extends Action = AnyAction>(): [
   Dispatch<ReducerAction<Reducer<S, A>>>
 ] {
   const context = useContext(RCBaseRoute.Context);
-  const [state, dispatch] = useReducer(
+  const [state, dispatch] = useReducer<Reducer<S, A>>(
     context.reducer || defaultReducer,
     context.initialState
   );
 
-  // 同步state
-  useEffect(() => {
-    if (context.reducer) {
-      context.initialState = state;
-    }
-  }, [state]);
-
-  return [state, dispatch];
+  return [
+    state,
+    (value: ReducerAction<Reducer<S, A>>): void => {
+      context.initialState = value;
+      dispatch(value);
+    },
+  ];
 }
