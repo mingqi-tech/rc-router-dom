@@ -23,6 +23,9 @@
  */
 
 import { compile, Key, pathToRegexp } from 'path-to-regexp';
+import { Route } from 'react-router-dom';
+import { Action, AnyAction, CombinedState } from 'redux';
+
 import React, {
   ComponentClass,
   createContext,
@@ -34,8 +37,6 @@ import React, {
   Reducer,
 } from 'react';
 import { LocaleLanguageKey } from '../constants';
-import { Route } from 'react-router-dom';
-import { Action, AnyAction, CombinedState } from 'redux';
 
 /**
  * 抽象基础路由类
@@ -111,6 +112,11 @@ export abstract class RCBaseRoute<
     }
     this.regexp = pathToRegexp(this.getFullPath(), this.keys);
   }
+
+  /**
+   * 路由私有state管理
+   */
+  public routeStateMap: Map<Function, any> = new Map();
 
   /**
    * 子路由列表
@@ -308,4 +314,8 @@ export interface RCBaseRouteImpl<
   readonly titleLocaleKey?: string;
   readonly showMenu?: boolean;
   readonly description?: string;
+}
+
+export interface ClassConstructor<T = any> {
+  new (...args: any[]): T;
 }
