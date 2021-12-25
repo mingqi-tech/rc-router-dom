@@ -32,7 +32,10 @@ export function useRouteState<S = any>(
   initialState: S
 ): [S, Dispatch<SetStateAction<S>>] {
   const context = useContext(RCBaseRoute.Context);
-  const [state, dispatch] = useState(context.initialState || initialState);
+  if (!context.initialState) {
+    context.initialState = initialState;
+  }
+  const [state, dispatch] = useState(context.initialState);
   return [
     state,
     (value: SetStateAction<S>): void => {

@@ -25,4 +25,3 @@
 export * from './use-route';
 export * from './use-route-reducer';
 export * from './use-route-state';
-export * from './use-route-scope-state';

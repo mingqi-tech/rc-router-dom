@@ -45,15 +45,17 @@ const defaultReducer = <S = undefined>(state: S): S => {
 /**
  * 使用route reducer
  */
-export function useRouteReducer<S = any, A extends Action = AnyAction>(): [
-  ReducerState<Reducer<S, A>>,
-  Dispatch<ReducerAction<Reducer<S, A>>>
-] {
+export function useRouteReducer<S = any, A extends Action = AnyAction>(
+  initialState?: S
+): [ReducerState<Reducer<S, A>>, Dispatch<ReducerAction<Reducer<S, A>>>] {
   const context = useContext(RCBaseRoute.Context);
   const [state, dispatch] = useReducer<Reducer<S, A>>(
     context.reducer || defaultReducer,
-    context.initialState
+    context.initialState || initialState
   );
+  if (!context.initialState) {
+    context.initialState = initialState;
+  }
 
   return [
     state,
