@@ -157,7 +157,7 @@ export abstract class RCBaseRoute<
    */
   public getAllChildren(): RCBaseRoute[] {
     if (this.children) {
-      return ([] as RCBaseRoute[]).concat(
+      return this.children.concat(
         ...this.children.map((o) => o.getAllChildren())
       );
     }
