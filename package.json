@@ -1,6 +1,6 @@
 {
   "name": "@mingqi/rc-router-dom",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "main": "dist/cjs",
   "types": "dist/types",
   "scripts": {
@@ -27,7 +27,6 @@
   "author": "YunlongRan<549510622@qq.com>",
   "license": "MIT",
   "devDependencies": {
-    "@quicker-js/class-transformer": "^1.0.3",
     "@types/react": "^17.0.35",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
@@ -47,7 +46,6 @@
     "yarn": ">=1.4.0"
   },
   "dependencies": {
-    "@mingqi/rc-router-dom": "^1.1.0",
     "path-to-regexp": "^6.2.0"
   }
 }
