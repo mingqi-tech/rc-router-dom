@@ -35,6 +35,14 @@ export class RCRoute<
   A extends Action = AnyAction
 > extends RCBaseRoute<T, S, A> {
   /**
+   * 创建路由实现需要的数据
+   * @param option
+   */
+  public static createImpl<T>(option: RCRouteImpl<T>): RCRouteImpl<T> {
+    return option;
+  }
+
+  /**
    * 创建路由实例
    * @param option
    */
@@ -89,14 +97,6 @@ export class RCRoute<
         }
       });
     }
-  }
-
-  /**
-   * 创建路由实现需要的数据
-   * @param option
-   */
-  public static createImpl<T>(option: RCRouteImpl<T>): RCRouteImpl<T> {
-    return option;
   }
 }
 

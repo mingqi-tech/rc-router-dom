@@ -31,6 +31,19 @@ import { RCBaseRoute } from '../rc-base-route';
  */
 export class RCRouter implements RCRouterImpl {
   /**
+   * 创建路由实例
+   * @param option
+   */
+  public static create(option: RCRouterImpl): RCRouter {
+    return new RCRouter(
+      option.route,
+      option.basename,
+      option.mode || 'browser',
+      option.window
+    );
+  }
+
+  /**
    * constructor
    * @param route 路由
    * @param basename 多实例项目开发时使用
@@ -58,23 +71,10 @@ export class RCRouter implements RCRouterImpl {
         basename,
         window,
         children: createElement(Routes, {
-          children: route.toElement(permissions),
+          children: route.toElement(permissions || []),
         }),
       }),
     });
-  }
-
-  /**
-   * 创建路由实例
-   * @param option
-   */
-  public static create(option: RCRouterImpl): RCRouter {
-    return new RCRouter(
-      option.route,
-      option.basename,
-      option.mode || 'browser',
-      option.window
-    );
   }
 }
 

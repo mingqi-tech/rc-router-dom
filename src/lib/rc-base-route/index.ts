@@ -47,6 +47,11 @@ export abstract class RCBaseRoute<
   S = any,
   A extends Action = AnyAction
 > {
+  /**
+   * 路由的Provider提供的上下文
+   */
+  public static Context: React.Context<RCBaseRoute<any, any, any>>;
+
   public keys: Key[] = [];
 
   public regexp: RegExp;
@@ -112,7 +117,10 @@ export abstract class RCBaseRoute<
     if (!this.root) {
       this.root = this as any;
     }
-    this.regexp = pathToRegexp(this.getFullPath(), this.keys);
+    this.regexp = pathToRegexp(
+      this.getFullPath().replace(/\*/g, '(.*)'),
+      this.keys
+    );
   }
 
   /**
@@ -293,11 +301,6 @@ export abstract class RCBaseRoute<
         .map((o) => o.toElement(permissions)),
     });
   }
-
-  /**
-   * 路由的Provider提供的上下文
-   */
-  public static Context: React.Context<RCBaseRoute<any, any, any>>;
 }
 
 export interface RCBaseRouteImpl<
