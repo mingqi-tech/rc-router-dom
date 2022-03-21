@@ -67,7 +67,7 @@ export abstract class RCBaseRoute<
    * 构造函数
    * @param path 路由路径
    * @param name 路由名称
-   * @param id
+   * @param id 路由的id
    * @param controller 路由控制器
    * @param children 路由子页面
    * @param root 路由的根路由
@@ -81,6 +81,7 @@ export abstract class RCBaseRoute<
    * @param titleLocaleKey 标题在本地语言包中的key
    * @param showMenu 是否显示在菜单中
    * @param description 描述
+   * @param permissions 权限列表
    */
   protected constructor(
     path: string,
@@ -103,7 +104,8 @@ export abstract class RCBaseRoute<
     >,
     public readonly titleLocaleKey?: string,
     public readonly showMenu?: boolean,
-    public readonly description?: string
+    public readonly description?: string,
+    public readonly permissions?: string[] | string
   ) {
     this.setPath(path);
     this.setName(name);
@@ -273,14 +275,22 @@ export abstract class RCBaseRoute<
 
   /**
    * 转换成Route元素
-   * @param props
+   * @param permissions 权限列表
    */
-  public toElement(props?: any): ReactElement {
+  public toElement(permissions: string[] = []): ReactElement {
     return createElement(Route, {
       path: this.path,
       element: this.createNode(),
-      children: (this.children || []).map((o) => o.toElement()),
-      ...props,
+      children: (this.children || [])
+        .filter((o) => {
+          if (Array.isArray(o.permissions)) {
+            return o.permissions.every((x) => permissions.includes(x));
+          } else if (typeof o.permissions === 'string') {
+            return permissions.includes(o.permissions);
+          }
+          return true;
+        })
+        .map((o) => o.toElement(permissions)),
     });
   }
 
@@ -314,6 +324,7 @@ export interface RCBaseRouteImpl<
   readonly titleLocaleKey?: string;
   readonly showMenu?: boolean;
   readonly description?: string;
+  readonly permissions?: string[] | string;
 }
 
 export interface ClassConstructor<T = any> {

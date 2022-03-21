@@ -70,7 +70,8 @@ export class RCModule<
       option.locale,
       option.titleLocaleKey,
       option.showMenu,
-      option.description
+      option.description,
+      option.permissions
     );
 
     if (option.children) {

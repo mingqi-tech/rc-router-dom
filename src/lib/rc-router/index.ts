@@ -47,7 +47,7 @@ export class RCRouter implements RCRouterImpl {
   /**
    * 将路由对象转换成 ReactElement
    */
-  public toElement(): ReactElement {
+  public toElement(permissions: string[] = []): ReactElement {
     const { mode, basename, route } = this;
     if (!RCBaseRoute.Context) {
       RCBaseRoute.Context = createContext(route);
@@ -58,7 +58,7 @@ export class RCRouter implements RCRouterImpl {
         basename,
         window,
         children: createElement(Routes, {
-          children: route.toElement(),
+          children: route.toElement(permissions),
         }),
       }),
     });
@@ -83,4 +83,5 @@ export interface RCRouterImpl {
   readonly basename?: string;
   readonly mode?: 'hash' | 'browser';
   readonly window?: Window;
+  readonly permissions?: string[];
 }
