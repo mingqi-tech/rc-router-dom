@@ -110,7 +110,7 @@ export abstract class RCBaseRoute<
     public readonly titleLocaleKey?: string,
     public readonly showMenu?: boolean,
     public readonly description?: string,
-    public readonly permissions?: string[] | string
+    public permissions?: string | string[]
   ) {
     this.setPath(path);
     this.setName(name);
@@ -292,7 +292,7 @@ export abstract class RCBaseRoute<
       children: (this.children || [])
         .filter((o) => {
           if (Array.isArray(o.permissions)) {
-            return o.permissions.every((x) => permissions.includes(x));
+            return o.permissions.some((x) => permissions.includes(x));
           } else if (typeof o.permissions === 'string') {
             return permissions.includes(o.permissions);
           }
@@ -327,7 +327,7 @@ export interface RCBaseRouteImpl<
   readonly titleLocaleKey?: string;
   readonly showMenu?: boolean;
   readonly description?: string;
-  readonly permissions?: string[] | string;
+  readonly permissions?: string | string[];
 }
 
 export interface ClassConstructor<T = any> {
