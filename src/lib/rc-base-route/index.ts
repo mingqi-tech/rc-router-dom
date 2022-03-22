@@ -266,6 +266,21 @@ export abstract class RCBaseRoute<
   }
 
   /**
+   * 带有权限的路由列表
+   */
+  public permissionRoutes: RCBaseRoute[] = [];
+
+  /**
+   * 获取具有权限的首个路由
+   */
+  public getHasPermissionFirstRoute(): RCBaseRoute | false {
+    if (this.permissionRoutes.length) {
+      return this.permissionRoutes[0];
+    }
+    return false;
+  }
+
+  /**
    * 将element创建为React元素
    * @private
    */
@@ -286,19 +301,18 @@ export abstract class RCBaseRoute<
    * @param permissions 权限列表
    */
   public toElement(permissions: string[] = []): ReactElement {
+    this.permissionRoutes = (this.children || []).filter((o) => {
+      if (Array.isArray(o.permissions)) {
+        return o.permissions.some((x) => permissions.includes(x));
+      } else if (typeof o.permissions === 'string') {
+        return permissions.includes(o.permissions);
+      }
+      return true;
+    });
     return createElement(Route, {
       path: this.path,
       element: this.createNode(),
-      children: (this.children || [])
-        .filter((o) => {
-          if (Array.isArray(o.permissions)) {
-            return o.permissions.some((x) => permissions.includes(x));
-          } else if (typeof o.permissions === 'string') {
-            return permissions.includes(o.permissions);
-          }
-          return true;
-        })
-        .map((o) => o.toElement(permissions)),
+      children: this.permissionRoutes.map((o) => o.toElement(permissions)),
     });
   }
 }
